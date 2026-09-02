@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador en la Nube Inteligente</title>
+    <title>Buscador en la Nube Infinitas Columnas</title>
     <style>
         body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; margin: 40px; background-color: #f8fafc; color: #1e293b; }
         .container { max-width: 650px; background: white; padding: 35px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); margin: 0 auto; }
@@ -14,32 +14,24 @@
         .btn-limpiar { width: 100%; padding: 14px; margin-top: 15px; background-color: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: background 0.2s; }
         .btn-limpiar:hover { background-color: #dc2626; }
         .estado { margin-top: 10px; font-size: 13px; font-weight: 600; color: #d97706; text-align: center; background: #fef3c7; padding: 8px; border-radius: 6px; }
-        
-        /* Contenedor de Múltiples Resultados */
         .resultado-container { margin-top: 25px; display: none; animation: fadeIn 0.3s ease; }
         .coincidencias-texto { font-size: 14px; font-weight: bold; color: #059669; margin-bottom: 10px; }
-        
-        /* Estilos de la Tabla de Resultados */
         .tabla-resultados { width: 100%; border-collapse: collapse; margin-top: 5px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .tabla-resultados th { background-color: #10b981; color: white; text-align: left; padding: 12px 15px; font-size: 13px; text-transform: uppercase; }
         .tabla-resultados td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
         .tabla-resultados tr:last-child td { border-bottom: none; }
         .tabla-resultados tr:nth-child(even) { background-color: #f8fafc; }
-        
         .mensaje-error { color: #b91c1c; font-weight: 600; margin-top: 20px; display: none; padding: 12px; background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 6px; font-size: 14px; }
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Buscador en la Nube Automatizado</h2>
+    <h2>Buscador Dinámico Multicolumna</h2>
     
-    <!-- Estado de la conexión automática -->
-    <div id="estado-conexion" class="estado">⏳ Conectando con la base de datos en GitHub...</div>
+    <div id="estado-conexion" class="estado">⏳ Conectando con la base de datos...</div>
 
-    <!-- Buscador Inteligente Dual -->
     <label for="search-term">Escribe el ID o el Nombre a consultar:</label>
     <input type="text" id="search-term" placeholder="Esperando conexión..." disabled>
     
@@ -51,37 +43,39 @@
 </div>
 
 <script>
-    // ⚠️ REEMPLAZA ESTO: Pega aquí tu enlace RAW de GitHub copiado en el Paso 2
+    // ⚠️ REEMPLAZA ESTO CON TU ENLACE REAL DE GITHUB
     const URL_CSV_GITHUB = "https://raw.githubusercontent.com/MesiasFigueroa/consultas/refs/heads/main/datos.csv"; 
 
-    let filasDatos = []; 
+    let cabeceras = []; // Guardará los títulos de tus columnas (id, nombre, telefono, etc.)
+    let filasDatos = []; // Guardará los registros de los clientes
 
-    // CARGA AUTOMÁTICA DESDE GITHUB AL ABRIR LA PÁGINA
     window.addEventListener('DOMContentLoaded', () => {
         const estadoTxt = document.getElementById('estado-conexion');
         const inputBusqueda = document.getElementById('search-term');
 
         fetch(URL_CSV_GITHUB)
             .then(response => {
-                if (!response.ok) throw new Error("No se pudo descargar el archivo desde GitHub");
+                if (!response.ok) throw new Error("No se pudo descargar el archivo");
                 return response.text();
             })
             .then(contenidoTexto => {
                 const lineas = contenidoTexto.split(/\r?\n/);
                 
-                filasDatos = lineas.map(linea => {
+                let matrizCompleta = lineas.map(linea => {
                     const separador = linea.includes(';') ? ';' : ',';
                     return linea.split(separador);
                 });
 
-                // Quitar encabezados
-                if (filasDatos.length > 0) filasDatos.shift();
+                // Filtramos filas vacías
+                matrizCompleta = matrizCompleta.filter(fila => fila.length >= 2 && fila[0].trim() !== "");
 
-                // Filtrar registros vacíos
-                filasDatos = filasDatos.filter(fila => fila.length >= 2 && fila[0].trim() !== "");
+                if (matrizCompleta.length > 0) {
+                    // 💡 MEJORA: Guardamos de forma dinámica la primera fila como los títulos
+                    cabeceras = matrizCompleta.shift(); 
+                    filasDatos = matrizCompleta;
+                }
 
-                // Cambiar aviso a éxito y habilitar buscador
-                estadoTxt.innerText = `🟢 ¡Base de datos sincronizada! (${filasDatos.length} clientes listos)`;
+                estadoTxt.innerText = `🟢 Base sincronizada con ${cabeceras.length} columnas y ${filasDatos.length} clientes.`;
                 estadoTxt.style.backgroundColor = "#d1fae5";
                 estadoTxt.style.color = "#065f46";
                 
@@ -90,14 +84,13 @@
                 inputBusqueda.focus();
             })
             .catch(error => {
-                estadoTxt.innerText = "❌ Error: Comprueba tu enlace RAW de GitHub o tu conexión a internet.";
+                estadoTxt.innerText = "❌ Error de conexión. Revisa el enlace de GitHub.";
                 estadoTxt.style.backgroundColor = "#fee2e2";
                 estadoTxt.style.color = "#991b1b";
                 console.error(error);
             });
     });
 
-    // Monitorear escritura en tiempo real
     document.getElementById('search-term').addEventListener('input', function() {
         const terminoBuscado = this.value.trim().toLowerCase();
         const containerResultados = document.getElementById('resultado-container');
@@ -111,6 +104,7 @@
             return;
         }
 
+        // Sigue buscando por ID (columna 1) o Nombre (columna 2)
         const coincidencias = filasDatos.filter(fila => {
             const idMatch = fila[0] && String(fila[0]).trim().toLowerCase() === terminoBuscado;
             const nombreMatch = fila[1] && String(fila[1]).toLowerCase().includes(terminoBuscado);
@@ -124,15 +118,22 @@
             containerResultados.innerHTML = '';
 
             coincidencias.forEach(cliente => {
+                // 💡 MEJORA: Construimos las filas de la tabla dinámicamente mapeando el archivo Excel
+                let filasHtmlDinamicas = '';
+                cabeceras.forEach((titulo, indice) => {
+                    filasHtmlDinamicas += `
+                        <tr>
+                            <td style="width: 35%;"><strong>${titulo.toUpperCase()}</strong></td>
+                            <td>${cliente[indice] || 'No registrado'}</td>
+                        </tr>
+                    `;
+                });
+
                 const tablaHtml = `
                     <table class="tabla-resultados">
-                        <thead>
-                            <tr><th colspan="2">Ficha del Cliente</th></tr>
-                        </thead>
+                        <thead><tr><th colspan="2">Ficha del Cliente</th></tr></thead>
                         <tbody>
-                            <tr><td style="width: 30%;"><strong>ID</strong></td><td>${cliente[0] || 'N/A'}</td></tr>
-                            <tr><td><strong>Nombre</strong></td><td>${cliente[1] || 'No registrado'}</td></tr>
-                            <tr><td><strong>Teléfono</strong></td><td>${cliente[2] || 'No registrado'}</td></tr>
+                            ${filasHtmlDinamicas}
                         </tbody>
                     </table>
                 `;
@@ -146,7 +147,6 @@
         }
     });
 
-    // Función de limpieza
     document.getElementById('btn-limpiar').addEventListener('click', function() {
         document.getElementById('search-term').value = '';
         document.getElementById('resultado-container').style.display = 'none';
