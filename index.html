@@ -14,45 +14,35 @@
         .btn-limpiar { width: 100%; padding: 14px; margin-top: 15px; background-color: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: background 0.2s; }
         .btn-limpiar:hover { background-color: #dc2626; }
         .estado { margin-top: 10px; font-size: 13px; font-weight: 600; color: #d97706; text-align: center; background: #fef3c7; padding: 8px; border-radius: 6px; }
-        
         /* Contenedor de Múltiples Resultados */
         .resultado-container { margin-top: 25px; display: none; animation: fadeIn 0.3s ease; }
-        .coincidencias-texto { font-size: 14px; font-weight: bold; color: #059669; margin-bottom: 10px; }
-        
+        .coincidencias-texto { font-size: 14px; font-weight: bold; color: #059669; margin-bottom: 10px; } 
         /* Estilos de la Tabla de Resultados */
         .tabla-resultados { width: 100%; border-collapse: collapse; margin-top: 5px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .tabla-resultados th { background-color: #10b981; color: white; text-align: left; padding: 12px 15px; font-size: 13px; text-transform: uppercase; }
         .tabla-resultados td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
         .tabla-resultados tr:last-child td { border-bottom: none; }
         .tabla-resultados tr:nth-child(even) { background-color: #f8fafc; }
-        
         .mensaje-error { color: #b91c1c; font-weight: 600; margin-top: 20px; display: none; padding: 12px; background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 6px; font-size: 14px; }
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-
 <div class="container">
     <h2>Buscador en la Nube Automatizado</h2>
-    
     <!-- Estado de la conexión automática -->
     <div id="estado-conexion" class="estado">⏳ Conectando con la base de datos en GitHub...</div>
-
     <!-- Buscador Inteligente Dual -->
     <label for="search-term">Escribe el ID o el Nombre a consultar:</label>
     <input type="text" id="search-term" placeholder="Esperando conexión..." disabled>
-    
     <button id="btn-limpiar" class="btn-limpiar">Limpiar Pantalla</button>
-
     <div id="coincidencias-info" class="coincidencias-texto"></div>
     <div id="resultado-container" class="resultado-container"></div>
     <div id="mensaje-error" class="mensaje-error"></div>
 </div>
-
 <script>
     // ⚠️ REEMPLAZA ESTO: Pega aquí tu enlace RAW de GitHub copiado en el Paso 2
-    const URL_CSV_GITHUB = "https://github.com/MesiasFigueroa/consultas/raw/refs/heads/main/datos.csv"; 
+    const URL_CSV_GITHUB = "https://jsdelivr.net"; 
 
     let filasDatos = []; 
 
