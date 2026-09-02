@@ -14,10 +14,8 @@
         .btn-limpiar { width: 100%; padding: 14px; margin-top: 15px; background-color: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 15px; font-weight: 600; transition: background 0.2s; }
         .btn-limpiar:hover { background-color: #dc2626; }
         .estado { margin-top: 10px; font-size: 13px; font-weight: 600; color: #d97706; text-align: center; background: #fef3c7; padding: 8px; border-radius: 6px; }
-        /* Contenedor de Múltiples Resultados */
         .resultado-container { margin-top: 25px; display: none; animation: fadeIn 0.3s ease; }
-        .coincidencias-texto { font-size: 14px; font-weight: bold; color: #059669; margin-bottom: 10px; } 
-        /* Estilos de la Tabla de Resultados */
+        .coincidencias-texto { font-size: 14px; font-weight: bold; color: #059669; margin-bottom: 10px; }
         .tabla-resultados { width: 100%; border-collapse: collapse; margin-top: 5px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .tabla-resultados th { background-color: #10b981; color: white; text-align: left; padding: 12px 15px; font-size: 13px; text-transform: uppercase; }
         .tabla-resultados td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; font-size: 15px; }
@@ -28,59 +26,67 @@
     </style>
 </head>
 <body>
+
 <div class="container">
-    <h2>Buscador en la Nube Automatizado</h2>
+    <h2>Buscador Sincronizado con GitHub</h2>
+    
     <!-- Estado de la conexión automática -->
-    <div id="estado-conexion" class="estado">⏳ Conectando con la base de datos en GitHub...</div>
+    <div id="estado-conexion" class="estado">⏳ Conectando con tu repositorio en GitHub...</div>
+
     <!-- Buscador Inteligente Dual -->
     <label for="search-term">Escribe el ID o el Nombre a consultar:</label>
-    <input type="text" id="search-term" placeholder="Esperando conexión..." disabled>
+    <input type="text" id="search-term" placeholder="Esperando sincronización..." disabled>
+    
     <button id="btn-limpiar" class="btn-limpiar">Limpiar Pantalla</button>
+
     <div id="coincidencias-info" class="coincidencias-texto"></div>
     <div id="resultado-container" class="resultado-container"></div>
     <div id="mensaje-error" class="mensaje-error"></div>
 </div>
+
 <script>
-    // ⚠️ REEMPLAZA ESTO: Pega aquí tu enlace RAW de GitHub copiado en el Paso 2
+    // ⚠️ REEMPLAZA ESTO CON TUS DATOS DE GITHUB COMO SE EXPLICA EN EL PASO 1
     const URL_CSV_GITHUB = "https://jsdelivr.net"; 
 
     let filasDatos = []; 
 
-    // CARGA AUTOMÁTICA DESDE GITHUB AL ABRIR LA PÁGINA
+    // Carga automática desde internet
     window.addEventListener('DOMContentLoaded', () => {
         const estadoTxt = document.getElementById('estado-conexion');
         const inputBusqueda = document.getElementById('search-term');
 
         fetch(URL_CSV_GITHUB)
             .then(response => {
-                if (!response.ok) throw new Error("No se pudo descargar el archivo desde GitHub");
+                if (!response.ok) throw new Error("No se pudo descargar el archivo");
                 return response.text();
             })
             .then(contenidoTexto => {
                 const lineas = contenidoTexto.split(/\r?\n/);
                 
                 filasDatos = lineas.map(linea => {
+                    // Soporte automático para comas o puntos y comas de Excel en español
                     const separador = linea.includes(';') ? ';' : ',';
                     return linea.split(separador);
                 });
 
-                // Quitar encabezados
+                // Quitar encabezados si el archivo tiene contenido
                 if (filasDatos.length > 0) filasDatos.shift();
 
-                // Filtrar registros vacíos
+                // Filtrar registros vacíos o dañados
                 filasDatos = filasDatos.filter(fila => fila.length >= 2 && fila[0].trim() !== "");
 
-                // Cambiar aviso a éxito y habilitar buscador
-                estadoTxt.innerText = `🟢 ¡Base de datos sincronizada! (${filasDatos.length} clientes listos)`;
+                // Mostrar éxito en la barra superior
+                estadoTxt.innerText = `🟢 ¡Sincronizado con GitHub! (${filasDatos.length} clientes listos)`;
                 estadoTxt.style.backgroundColor = "#d1fae5";
                 estadoTxt.style.color = "#065f46";
                 
+                // Activar campo de texto
                 inputBusqueda.disabled = false;
                 inputBusqueda.placeholder = "Escribe el ID o el nombre...";
                 inputBusqueda.focus();
             })
             .catch(error => {
-                estadoTxt.innerText = "❌ Error: Comprueba tu enlace RAW de GitHub o tu conexión a internet.";
+                estadoTxt.innerText = "❌ Error de conexión. Revisa que tu repositorio de GitHub sea PÚBLICO y que el enlace esté bien escrito.";
                 estadoTxt.style.backgroundColor = "#fee2e2";
                 estadoTxt.style.color = "#991b1b";
                 console.error(error);
@@ -116,9 +122,7 @@
             coincidencias.forEach(cliente => {
                 const tablaHtml = `
                     <table class="tabla-resultados">
-                        <thead>
-                            <tr><th colspan="2">Ficha del Cliente</th></tr>
-                        </thead>
+                        <thead><tr><th colspan="2">Ficha del Cliente</th></tr></thead>
                         <tbody>
                             <tr><td style="width: 30%;"><strong>ID</strong></td><td>${cliente[0] || 'N/A'}</td></tr>
                             <tr><td><strong>Nombre</strong></td><td>${cliente[1] || 'No registrado'}</td></tr>
@@ -136,7 +140,7 @@
         }
     });
 
-    // Función de limpieza
+    // Limpieza de pantalla
     document.getElementById('btn-limpiar').addEventListener('click', function() {
         document.getElementById('search-term').value = '';
         document.getElementById('resultado-container').style.display = 'none';
